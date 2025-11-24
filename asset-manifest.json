@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/resourceallocationdashboard/static/css/main.67317f24.css",
+    "main.js": "/resourceallocationdashboard/static/js/main.46ad6974.js",
+    "index.html": "/resourceallocationdashboard/index.html",
+    "main.67317f24.css.map": "/resourceallocationdashboard/static/css/main.67317f24.css.map",
+    "main.46ad6974.js.map": "/resourceallocationdashboard/static/js/main.46ad6974.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.67317f24.css",
+    "static/js/main.46ad6974.js"
+  ]
+}
