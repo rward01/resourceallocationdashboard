@@ -1062,6 +1062,60 @@ const TimelineView = ({ groupedAllocations, selectedYear }) => {
           return days;
      }, [selectedYear]);
 
+     // Calculate which lane each milestone should be in to avoid overlaps
+     const calculateLanes = (allocations) => {
+          if (allocations.length === 0) return { lanes: [], maxLanes: 1 };
+
+          // Sort by start date
+          const sorted = [...allocations].sort((a, b) => a.startDate - b.startDate);
+
+          // Assign each milestone to a lane
+          const lanes = [];
+          const laneAssignments = new Map();
+
+          sorted.forEach(allocation => {
+               // Find the first available lane where this milestone doesn't overlap
+               let assignedLane = 0;
+               let placed = false;
+
+               while (!placed) {
+                    // Check if this lane is free for this time period
+                    const overlaps = Array.from(laneAssignments.entries()).some(([otherAlloc, lane]) => {
+                         if (lane !== assignedLane) return false;
+
+                         // Check if time periods overlap
+                         const otherStart = otherAlloc.startDate.getTime();
+                         const otherEnd = otherAlloc.endDate.getTime();
+                         const thisStart = allocation.startDate.getTime();
+                         const thisEnd = allocation.endDate.getTime();
+
+                         return (thisStart < otherEnd && thisEnd > otherStart);
+                    });
+
+                    if (!overlaps) {
+                         laneAssignments.set(allocation, assignedLane);
+                         placed = true;
+                    } else {
+                         assignedLane++;
+                    }
+               }
+          });
+
+          // Calculate max lanes needed
+          const maxLanes = Math.max(...Array.from(laneAssignments.values())) + 1;
+
+          // Group allocations by lane
+          for (let i = 0; i < maxLanes; i++) {
+               lanes[i] = [];
+          }
+
+          laneAssignments.forEach((lane, allocation) => {
+               lanes[lane].push(allocation);
+          });
+
+          return { lanes, maxLanes };
+     };
+
      const getMilestonePosition = (allocation) => {
           const yearStart = new Date(selectedYear, 0, 1);
           const startDay = Math.floor((allocation.startDate - yearStart) / (1000 * 60 * 60 * 24));
@@ -1126,33 +1180,44 @@ const TimelineView = ({ groupedAllocations, selectedYear }) => {
                               <div key={resourceType} className="resource-type-group">
                                    <div className="resource-type-header">{resourceType}</div>
 
-                                   {Object.entries(resourcesInType).map(([resourceId, resourceData]) => (
-                                        <div key={resourceId} className="resource-row">
-                                             <div className="resource-label">{resourceData.resourceName}</div>
-                                             <div className="timeline-bars">
-                                                  {resourceData.allocations.map(allocation => {
-                                                       const position = getMilestonePosition(allocation);
-                                                       if (!position) return null;
+                                   {Object.entries(resourcesInType).map(([resourceId, resourceData]) => {
+                                        const { lanes, maxLanes } = calculateLanes(resourceData.allocations);
+                                        const rowHeight = maxLanes * 50; // 50px per lane
 
-                                                       return (
-                                                            <div
-                                                                 key={allocation.id}
-                                                                 className="milestone-bar"
-                                                                 style={{
-                                                                      ...position,
-                                                                      backgroundColor: clientColors[allocation.clientId]
-                                                                 }}
-                                                                 title={`${allocation.clientName} - ${allocation.milestoneName}\n${allocation.startDate.toLocaleDateString()} - ${allocation.endDate.toLocaleDateString()}`}
-                                                            >
-                                                                 <span className="milestone-label">
-                                                                      {allocation.clientName.substring(0, 15)}... - {allocation.milestoneName}
-                                                                 </span>
+                                        return (
+                                             <div key={resourceId} className="resource-row" style={{ minHeight: `${rowHeight}px` }}>
+                                                  <div className="resource-label" style={{ minHeight: `${rowHeight}px` }}>
+                                                       {resourceData.resourceName}
+                                                  </div>
+                                                  <div className="timeline-bars" style={{ minHeight: `${rowHeight}px` }}>
+                                                       {lanes.map((laneAllocations, laneIndex) => (
+                                                            <div key={laneIndex} className="timeline-lane" style={{ top: `${laneIndex * 50}px` }}>
+                                                                 {laneAllocations.map(allocation => {
+                                                                      const position = getMilestonePosition(allocation);
+                                                                      if (!position) return null;
+
+                                                                      return (
+                                                                           <div
+                                                                                key={allocation.id}
+                                                                                className="milestone-bar"
+                                                                                style={{
+                                                                                     ...position,
+                                                                                     backgroundColor: clientColors[allocation.clientId]
+                                                                                }}
+                                                                                title={`${allocation.clientName} - ${allocation.milestoneName}\n${allocation.startDate.toLocaleDateString()} - ${allocation.endDate.toLocaleDateString()}`}
+                                                                           >
+                                                                                <span className="milestone-label">
+                                                                                     {allocation.clientName.substring(0, 15)}... - {allocation.milestoneName}
+                                                                                </span>
+                                                                           </div>
+                                                                      );
+                                                                 })}
                                                             </div>
-                                                       );
-                                                  })}
+                                                       ))}
+                                                  </div>
                                              </div>
-                                        </div>
-                                   ))}
+                                        );
+                                   })}
                               </div>
                          ))
                     )}

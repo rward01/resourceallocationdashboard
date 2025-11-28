@@ -349,7 +349,16 @@ body {
 	flex: 1;
 	position: relative;
 	min-width: 14600px; /* 365 days × 40px each */
-	padding: 10px 0;
+	padding: 5px 0;
+}
+
+.timeline-lane {
+	position: absolute;
+	left: 0;
+	right: 0;
+	height: 50px;
+	display: flex;
+	align-items: center;
 }
 
 /* Milestone Bars */
@@ -364,6 +373,7 @@ body {
 	transition: transform 0.2s, box-shadow 0.2s;
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
 	overflow: hidden;
+	top: 5px;
 }
 
 	.milestone-bar:hover {
