@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/resourceallocationdashboard/static/css/main.ae3e9b19.css",
-    "main.js": "/resourceallocationdashboard/static/js/main.5d0df64b.js",
+    "main.css": "/resourceallocationdashboard/static/css/main.66bd0932.css",
+    "main.js": "/resourceallocationdashboard/static/js/main.f904e265.js",
     "index.html": "/resourceallocationdashboard/index.html",
-    "main.ae3e9b19.css.map": "/resourceallocationdashboard/static/css/main.ae3e9b19.css.map",
-    "main.5d0df64b.js.map": "/resourceallocationdashboard/static/js/main.5d0df64b.js.map"
+    "main.66bd0932.css.map": "/resourceallocationdashboard/static/css/main.66bd0932.css.map",
+    "main.f904e265.js.map": "/resourceallocationdashboard/static/js/main.f904e265.js.map"
   },
   "entrypoints": [
-    "static/css/main.ae3e9b19.css",
-    "static/js/main.5d0df64b.js"
+    "static/css/main.66bd0932.css",
+    "static/js/main.f904e265.js"
   ]
 }
